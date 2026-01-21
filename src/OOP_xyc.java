@@ -37,6 +37,9 @@ public class OOP_xyc {
 		System.out.println(ming instanceof Person);
 		System.out.println(ming instanceof Student);
 		
+		System.out.println(ming);
+		
+		System.out.println(ming.getNumber());
 	}
 
 

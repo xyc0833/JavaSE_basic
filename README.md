@@ -205,3 +205,272 @@ System.out.println(idx);
 向下转型把抽象的类型变成一个具体的子类型
 向下转型很可能报错：ClassCastException
 
+总结
+
+继承是面向对象编程的一种代码复用方式
+Java只允许单继承
+protected允许子类访问父类的字段和方法
+子类的构造方法可以通过 super () 调用父类的构造方法
+可以安全地向上转型为更抽象的类型
+可以强制向下转型, 最好借助 instanceof 判断
+子类和父类的关系是is, has关系不能用继承
+
+## 多态
+
+- Java的实例方法调用是基于运行时实际类型的动态调用
+- 多态是指针对某个类型的方法调用, 其真正执行的方法取决于运行时期实际类型的方法
+- 对某个类型调用某个方法, 执行的方法可能是某个子类的覆写方法
+- 利用多态, 允许添加更多类型的子类实现功能扩展
+
+
+super 可以调用父类的方法
+
+```java
+	public String hello() {
+		return super.hello()+"我是学生";
+	}
+```
+
+### final方法
+
+被 final 修饰的方法，不能被子类重写（override）
+二、为什么要用 final 方法？
+
+主要有 3 个目的：
+1️⃣ 防止子类“乱改”核心逻辑
+class Parent {
+    public final void rule() {
+        System.out.println("核心规则");
+    }
+}
+class Child extends Parent {
+    // ❌ 编译错误，不能重写
+    public void rule() {}
+}
+👉 保证行为不被破坏
+2️⃣ 设计上“不希望被扩展”
+工具方法
+安全相关逻辑
+模板方法中的关键步骤 
+
+
+子类可以覆写父类的方法 (Override) 
+覆写在子类中改变了父类方法的行为
+多态：Java的方法调用总是作用于对象的实际类型
+final修饰的方法可以阻止被覆写
+final修饰的class可以阻止被继承
+final修饰的field必须在创建对象时初始化
+
+
+## 抽象类
+
+**抽象方法**是 Java OOP 里一个**非常核心、但一开始容易“抽象过头”**的概念。
+
+---
+## 一、一句话理解抽象方法
+
+> **抽象方法：只规定“要做什么”，不规定“怎么做”**
+
+---
+
+## 二、什么是抽象方法？
+
+### 定义特点
+
+```java
+public abstract void pay();
+```
+
+* 有方法声明
+* **没有方法体**
+* 用 `abstract` 修饰
+
+---
+
+### 抽象方法所在位置
+
+👉 **只能在抽象类中**
+
+```java
+public abstract class Payment {
+    public abstract void pay();
+}
+```
+
+---
+
+## 三、基本规则（必考）
+
+### ✅ 必须遵守的规则
+
+1️⃣ 含有抽象方法的类 **必须是抽象类**
+
+2️⃣ 子类 **必须实现所有抽象方法**
+（除非子类本身也是抽象类）
+
+```java
+class AliPay extends Payment {
+    @Override
+    public void pay() {
+        System.out.println("支付宝支付");
+    }
+}
+```
+
+---
+
+### ❌ 不允许的
+
+```java
+abstract class A {
+    public abstract void test() {} // ❌ 抽象方法不能有方法体
+}
+```
+
+```java
+abstract final class A {} // ❌ 抽象类不能是 final
+```
+
+---
+
+## 四、抽象方法在实际业务中的应用（重点）
+### 🌰 业务场景：支付系统（非常经典）
+
+#### 1️⃣ 抽象父类（定义规范）
+
+```java
+public abstract class Payment {
+
+    // 抽象方法：每种支付方式必须实现
+    public abstract void pay(int amount);
+
+    // 公共逻辑
+    public void log() {
+        System.out.println("记录支付日志");
+    }
+}
+```
+
+---
+
+#### 2️⃣ 子类实现不同业务
+
+```java
+class AliPay extends Payment {
+    @Override
+    public void pay(int amount) {
+        System.out.println("支付宝支付：" + amount);
+    }
+}
+```
+
+```java
+class WeChatPay extends Payment {
+    @Override
+    public void pay(int amount) {
+        System.out.println("微信支付：" + amount);
+    }
+}
+```
+
+---
+
+#### 3️⃣ 业务方调用（解耦关键）
+
+```java
+public void doPay(Payment payment) {
+    payment.pay(100);
+}
+```
+
+👉 **业务层不关心具体实现**
+
+---
+
+## 五、为什么业务中一定要用抽象方法？
+
+### 1️⃣ 解耦（最重要）
+
+* 新增支付方式
+* 不改原代码
+* 只加新子类
+
+👉 **符合开闭原则**
+
+---
+
+### 2️⃣ 强制规范
+
+> “你要接入支付？那你必须实现 `pay()`”
+
+---
+
+### 3️⃣ 更利于维护 & 扩展
+
+* 删除 if-else
+* 少改老代码
+* 风险更低
+
+---
+
+## 六、抽象方法 vs 接口（简单对比）
+
+| 对比点  | 抽象方法    | 接口                 |
+| ---- | ------- | ------------------ |
+| 所在位置 | 抽象类     | 接口                 |
+| 成员变量 | 可以有普通字段 | 只能是常量              |
+| 方法实现 | 可以有普通方法 | Java 8+ 可有 default |
+| 适用场景 | 有共性实现   | 只定义能力              |
+
+---
+
+## 七、一个生活类比（超好记）
+
+> **抽象方法 = 菜谱
+> 具体类 = 厨师**
+
+菜谱告诉你做什么菜，不教你具体怎么炒。
+
+---
+
+## 八、一句话总结（面试用）
+
+> **抽象方法定义规范，子类实现细节，用于业务解耦和扩展**
+
+
+## 接口
+
+如果一个抽象类没有字段, 所有方法全部是抽象方法,
+就可以把该抽象类改写为接口 (interface) 
+
+使用interface声明一个接口
+
+| 对比项 | abstract class | interface |
+|------|---------------|-----------|
+| 继承 | 只能 extends 一个 class | 可以 implements 多个 interface |
+| 字段 | 可以定义实例字段 | 不能定义实例字段 |
+| 抽象方法 | 可以定义抽象方法 | 可以定义抽象方法 |
+| 非抽象方法 | 可以定义非抽象方法 | 可以定义 default 方法 |
+
+
+• 接口定义了纯抽象规范
+• 类可以实现多个接口
+• 接口也是数据类型, 适用于向上转型和向下转型
+• 接口不能定义实例字段
+• 接口可以定义default方法 (JDK>=1.8) 
+
+## 静态字段 static
+
+所有实例共享一个静态字段
+不推荐用实例变量访问静态字段
+推荐用类名访问静态字段
+可以把静态字段理解为描述class
+本身的字段 (非实例字段) 
+
+静态方法经常用于工具类
+• Arrays.sort () 
+• Math.random () 
+静态方法经常用于辅助方法
+Java程序的入口main () 也是静态方法
+
+
