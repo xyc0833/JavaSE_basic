@@ -42,3 +42,10 @@ switch的计算结果必须是整型、字符串或枚举类型
 总是写上default, 建议打开missing default警告
 尽量少用switch语句
 
+## for
+
+for循环通过计数器进行循环
+for循环可以遍历数组
+最佳实践：计数器变量定义在for循环内部, 循环体内部不修改计数器
+for each循环可以更简单地遍历数组
+
