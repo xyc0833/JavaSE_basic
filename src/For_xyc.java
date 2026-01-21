@@ -44,6 +44,31 @@ public class For_xyc {
 			sum01 = sum01 + ns01[i]*ns01[i];
 		}
 		System.out.println(sum01); // 检查结果是否为55
+		
+		
+		int[] ns02 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+		int sum02 = 0;
+		for (int i = 0; i < ns02.length; i++) {
+			if (i == 5) {
+				System.out.println("break");
+				break;
+			}
+			System.out.println("add ns[" + i + "]");
+			sum02 = sum02 + ns02[i];
+		}
+		System.out.println(sum02);
+		
+		
+		int[] ns03 = { 31, 21, 22, 73, 79, 56, 7, 83, 19, 12, 53, 84, 68 };
+		int sumOfOdds = 0;
+		for (int n : ns03) {
+			if (n % 2 == 0) {
+				System.out.println("skip " + n);
+				continue;
+			}
+			sumOfOdds = sumOfOdds + n;
+		}
+		System.out.println(sumOfOdds);
 	}
 
 }
