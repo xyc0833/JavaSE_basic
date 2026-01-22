@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.xyc.Abstract_xyc
+X-Copyright: blablabla...
+X-Build-Version: 1.0

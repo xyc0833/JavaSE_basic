@@ -1,3 +1,4 @@
+package com.xyc;
 
 public class Rect extends Shape{
 	private final double width;

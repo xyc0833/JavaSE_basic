@@ -233,8 +233,13 @@ super 可以调用父类的方法
 
 ### final方法
 
+final与访问权限不冲突
+用final修饰class可以阻止被继承
+用final修饰method可以阻止被覆写
+
 被 final 修饰的方法，不能被子类重写（override）
 二、为什么要用 final 方法？
+
 
 主要有 3 个目的：
 1️⃣ 防止子类“乱改”核心逻辑
@@ -472,5 +477,148 @@ public void doPay(Payment payment) {
 • Math.random () 
 静态方法经常用于辅助方法
 Java程序的入口main () 也是静态方法
+
+## 包 package
+
+JVM只看完整类名, 因此, 只要包名不同, 类就不同：
+• xiaoming.Person
+• xiaohong.Person
+包可以是多层结构
+• java.util.Arrays
+包没有父子关系
+
+Java内建的package机制是为了避免class命名冲突
+JDK的核心类使用java.lang包
+JDK的其它常用类定义在java.util.*, 
+, Java.math.*
+, java.text.* …..
+包名推荐使用倒置的域名, 例如 org.apache
+
+
+## 访问权限
+
+1️⃣ private（私有）
+作用范围：仅在当前类中可访问
+
+3️⃣ protected（受保护）
+作用范围：同包 + 不同包的子类
+
+4️⃣ public（公共）
+作用范围：任何地方都可访问
+
+package 访问权限（Package-Private） 指的是：
+> 只允许同一个 package（包）中的类访问
+
+## classpath 
+
+• classpath是一个环境变量
+•classpath指示JVM如何搜索class
+•classpath设置的搜索路径与操作系统相关：
+• C:worklproject1\bin;C:Ishared；"D：\My Documentlproject2\bin"
+• /usr/shared:/usr/local/bin:/home/feiyangedu/bin
+
+• 假设classpath是.；C：：\worklproject1\bin;C：|shared
+• JVM在加载com.feiyangedu.Hello这个类时, 依次查找：
+• ＜当前目录>lcomlfeiyangedu\Hello.class
+• C:lworklproject1\binlcomlfeiyangedu\Hello.class
+• C:sharedlcomlfeiyangedu\Hello.class
+• 在某个路径下找到了, 就不再继续搜索
+•如果都没有找到, 报错
+
+classpath的设定方法：
+• 直接在系统环境中设置classpath环境变量 (不推荐) 
+• 在启动JVM时设置classpath变量 (推荐) ：
+• java -classpath C:lworklbin;C:Ishared com.feiyangedu.Hello
+• java -cp C: worklbin;C:shared com.feiyangedu.Hello
+•没有设置环境变量, 也没有设置-Cp参数, 默认的classpath为•, 即当前目录
+• 在Eclipse中运行Java程序, 
+Eclipse自动传入的-cp参数是当前工程的bin目录和引入的jar
+
+## jar包
+
+jar包是zip格式的压缩文件, 包含若干.class文件
+jar包相当于目录
+classpath可以包含jar文件：C:lworklbinlall.jar
+查找com.feiyangedu.Hello类将在C:Wworklbinlall.jar文件中搜索
+com/feiyangedu/Hello.class
+使用jar包可以避免大量的目录和.class文件
+
+如何创建jar包：
+• 使用JDK自带的jar命令
+• 使用构建工具如Maven等
+
+• jar包可以包含一个特殊的/META-INF/MANIFEST.MF文件
+• MANIFEST.MF是纯文本, 可以指定Main-Class和其它信息
+•jar包还可以包含其它jar包
+
+• JVM运行时会自动加载JDK自带的class
+• JDK自带的class被打包在rt.jar
+• 不需要在classpath中引用rt,jar
+
+
+**可以先压缩成zip文件 然后 重命名为 .jar**
+
+find . -name testxyc.jar
+
+```shell
+MacBook-Air:src xuyaochen$ java -cp testxyc.jar com.xyc.Abstract_xyc
+180.0
+36.31681107549801
+Hello, World!
+MacBook-Air:src xuyaochen$ 
+```
+
+-cp（或 -classpath）
+
+📌 作用：
+告诉 JVM：到哪里去找要运行的 class
+也就是把 testxyc.jar 加入 类加载路径（Classpath）
+
+打jar包是遇到的问题 
+
+正确的 jar 结构应该长这样
+META-INF/
+└── MANIFEST.MF
+com/
+└── xyc/
+    ├── Abstract_xyc.class
+    ├── Circle.class
+    ├── Hello.class
+    ├── Rect.class
+    ├── Shape.class
+    └── ShapeUtil.class
+    
+    
+运行一定要是 .class文件 而不是 .java文件
+
+要在bin目录下 用class打jar包
+
+MacBook-Air:src xuyaochen$ java -jar testmani.jar 
+180.0
+36.31681107549801
+Hello, World!
+MacBook-Air:src xuyaochen$ 
+
+## MANIFEST
+
+一、MANIFEST 文件是什么？
+MANIFEST.MF 是 JAR 包的元数据说明文件。
+固定位置：
+META-INF/MANIFEST.MF
+
+本质：纯文本文件
+JVM / 工具通过它了解：
+这个 jar 是干嘛的
+从哪开始执行
+依赖和版本信息
+📌 可以把它理解为：
+jar 包的“说明书 / 入口配置文件”
+
+• JVM通过环境变量classpath决定搜索class的路径和顺序
+• 不推荐设置系统环境变量classpath, 始终建议通过-cp命令传入
+• jar包相当于目录, 可以包含很多class文件, 方便下载和使用
+• META-INF/MANIFEST.MF可以提供jar包的信息, 如Main-Class
+• 不需要在classpath中引用包含Java核心类的rt.jar
+
 
 
