@@ -141,6 +141,23 @@ public class Log_main {
 	        }
 	    }
 	}
+	
+	static void chectField02(Field  f,Person p )throws Exception{
+		//JVM 用 注解的 Class 对象 来判断“有没有贴这个注解”。
+		if(f.isAnnotationPresent(NotNull.class)) {
+			Object r = f.get(p);
+			if(r == null) {
+				System.out.println("Error field" + f.getName() + "is null ");
+			}
+		}
+		if(f.isAnnotationPresent(Range.class)) {
+			Range  range = f.getAnnotation(Range.class);
+			int n = (Integer) f.get(p);
+			if(n<range.min()|| n>range.max()) {
+				System.out.println("Error field" + f.getName() + "is out of range");
+			}
+		}
+	}
 
 	
 	static void printSuperClass(Class c) {
