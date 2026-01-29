@@ -1696,9 +1696,118 @@ public class Person {
 }
 
 ```
+annotation 英文意思
+annotation = 注释 / 标注 / 批注
+
+java中表示注解
+
+### 泛型
+
+泛型（Generic）就是定义一种模板，例如ArrayList&lt;T&gt;。
+
+在代码中为用到的类创建对应的ArrayList&lt;类型&gt;： 
+* ArrayList&lt;String&gt; strList = new ArrayList&lt;String&gt;();
+
+编译器会针对泛型类型作检查。 
+要注意泛型的继承关系。
 
 
+### 使用泛型
+ 
+定义泛型（Generic）类型<Number>：
+ 
+* List<T>的泛型接口变为强类型：
+  * void add(Number)
+  * Number get(int)
+ 
+不指定泛型参数类型时，编译器会给出警告，且只能将<T>视为Object类型。
 
+Score score2 = new Score<>("数据结构与算法基础", "EP074512", "优秀")
+//这种什么类型都不写的 通过自动类型推断来得到的 称之为钻石运算符
+
+基本类型 不允许参与到泛型中 
+
+当然，如果是基本类型的数组，因为数组本身是引用类型，所以说是可以的：
+```java
+public static void main(String[] args) {
+    Test<int[]> test = new Test<>();
+}
+
+Test<Test<Test<Integer>>> test = new Test<>();  
+//你没看错，泛型的类型参数也可以是另一个泛型类型，套娃形式存在
+```
+
+泛型也可以支持套娃使用
+
+## 泛型方法
+
+当然，类型参数并不是只能在泛型类中才可以使用，我们也可以定义泛型方法。
+
+当某个方法（无论是是静态方法还是成员方法）需要接受的参数类型并不确定时，我们也可以使用泛型来表示：
+
+
+泛型方法会在使用时自动确定泛型类型，比如上我们定义的是类型T作为参数，
+同样的类型T作为返回值，实际传入的参数是一个字符串类型的值，那么T就会自动变成String类型，
+因此返回值也是String类型。
+
+### 擦拭法
+ 
+Java的泛型（Generic）是采用擦拭法（Type Erasure）实现的。
+ 
+擦拭法的局限：
+ 
+* <T>不能是基本类型，例如int
+* Object字段无法持有基本类型
+* 无法取得带泛型的Class
+* 无法判断带泛型的Class
+* 不能实例化 T 类型
+ 
+可以继承自泛型类：
+ 
+```
+public class IntPair extends Pair<Integer> {
+}
+```
+ 
+子类可以获取父类的泛型类型。
+ 
+继承关系：
+ 
+```
+Type
+|
++- Class
+|
++- ParameterizedType
+|
++- GenericArrayType
+|
++- WildcardType
+```
+
+## 泛型的界限
+
+现在有一个新的需求，现在没有String类型的成绩了，但是成绩依然可能是整数，
+也可能是小数，这时我们不希望用户将泛型指定为除数字类型外的其他类型，
+我们就需要使用到泛型的上界定义：
+
+```java
+public class Score<T extends Number> {   //设定类型参数上界，必须是Number或是Number的子类
+    private final String name;
+    private final String id;
+    private final T value;
+
+    public Score(String name, String id, T value) {
+        this.name = name;
+        this.id = id;
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
+}
+```
 
 
 
