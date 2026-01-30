@@ -1809,8 +1809,174 @@ public class Score<T extends Number> {   //设定类型参数上界，必须是N
 }
 ```
 
+## 泛型的类型擦除
+
+泛型的底层本质：存一个object
+
+如果我们给类型变量设定了上界，那么会从默认类型变成上界定义的类型：
 
 
+### extends通配符
+ 
+```
+void someMethod(List<? extends Number> list) {
+    Number n = list.get(0);
+    list.add(n); // ERROR
+}
+```
+ 
+允许传入`List<Number>`，`List<Integer>`，`List<Double>`...
+ 
+允许调用方法获取Number类型
+ 
+不允许调用方法传入Number类型（null除外）
+ 
+### <T extends Number>
+ 
+定义泛型时可以通过extends限定T必须是Number或Number的子类
 
+### super通配符
+ 
+```
+void someMethod(List<? super Integer> list) {
+    list.add(123);
+    Integer n = list.get(0); // ERROR
+}
+```
+ 
+允许传入`List<Integer>`，`List<Number>`，`List<Object>`
+ 
+允许调用方法传入Integer类型
+ 
+不允许调用方法获取Integer类型（Object除外）
+ 
+### <T super Integer>
+ 
+定义泛型时可以通过extends限定T必须是Integer或Integer的超类
+ 
+### extends和super通配符的区别
+ 
+<? extends T>允许调用方法获取T的引用
+ 
+<? super T>允许调用方法传入T的引用
+ 
+### 无限定通配符<?>
+ 
+只能获取Object引用
+ 
+只能传入null
+ 
+可以用<T>消除<?>
+
+部分反射API是泛型：
+ * Class<T> * Constructor<T>
+ 
+可以声明带泛型的数组，但不能直接创建带泛型的数组，必须强制转型
+ 
+可以通过`Array.newInstance(Class<T>, int)`创建`T[]`数组，需要强制转型
+
+
+### Java集合
+ 
+java.util提供了集合类，包括：
+ 
+* Collection：根接口
+* List：有序列表
+* Set：无重复元素集合
+* Map：通过Key查找Value的映射表
+ 
+Java集合支持范型，通过迭代器（Iterator）访问集合。
+
+Java集合类定义在java.util包中
+常用的集合类包括List, Set,Map等
+Java集合使用统一的Iterator遍历集合
+尽量不要使用遗留接口
+
+### List
+ 
+List是一种有序列表，通过索引访问元素。
+ 
+* void add(E e) 在末尾添加一个元素
+* void add(int index, E e) 在指定索引添加一个元素
+* int remove(int index) 删除指定索引的元素
+* int remove(Object e) 删除某个元素
+* E get(int index) 获取指定索引的元素
+* int size() 获取链表大小（包含元素的个数）
+ 
+List有ArrayList和LinkedList两种实现。
+ 
+遍历List使用Iterator或者foreach循环。
+ 
+List和Array可以相互转换。
+
+| 对比项 | ArrayList | LinkedList |
+|------|----------|-----------|
+| 获取指定元素 | 速度很快 | 需要从头开始查找元素 |
+| 添加元素到末尾 | 速度很快 | 速度很快 |
+| 在指定位置添加/删除 | 需要移动元素 | 不需要移动元素 |
+| 内存占用 | 少 | 较大 |
+
+
+### List
+
+判断元素是否存在或者查找元素索引：
+
+* boolean contains(Object o) 是否包含某个元素
+* int indexOf(Object o) 查找某个元素的索引，不存在返回-1
+
+要正确调用contains / indexOf方法，放入的实例要正确实现equals()
+
+equals()编写方法：
+
+1. 判断`this==o`
+2. 判断`o instanceof Person`
+3. 强制转型，并比较每个对应的字段
+  * 基本类型字段用==直接比较
+  * 引用类型字段借助`Objects.equals()`判断
+  
+   解放双眼，用手机听书
+
+### Map
+ 
+Map是一种键值映射表，可以通过Key快速查找Value
+ 
+常用方法：
+ 
+* V put(K key, V value)：把Key-Value放入Map
+* V get(K key)：通过Key获取Value
+* boolean containsKey(K key)：判断Key是否存在
+ 
+遍历Map：
+ 
+用for...each循环：
+ 
+* 循环Key：keySet()
+* 循环Key和Value：entrySet()
+ 
+常用的实现类：
+ 
+* HashMap：不保证有序
+* SortedMap：保证按Key排序，实现类有TreeMap
+
+## 迭代器
+
+https://www.itbaima.cn/zh-CN/document/k6fmxd6qabgkwm9i?segment=1#%E8%BF%AD%E4%BB%A3%E5%99%A8
+
+### equals和hashCode
+ 
+正确使用Map必须保证：
+ 
+* 作为Key的对象必须正确覆写equals()方法 * 作为Key的对象必须正确覆写hashCode()方法
+ 
+覆写hashCode：
+ * 如果两个对象相等，则两个对象的hashCode()必须相等
+* 如果两个对象不相等，则两个对象的hashCode()尽量不相等（可以相等，会造成效率下降）
+ 
+hashCode可以通过Objects.hashCode()辅助方法实现
+
+
+作为Key的对象必须正确覆写equals和hashCode
+一个类如果覆写了equals, 就必须覆写hashCode
+hashCode可以通过Objects.hashCode () 辅助方法实现
 
 

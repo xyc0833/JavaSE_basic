@@ -3,7 +3,12 @@ package com.xyc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.print.DocFlavor.STRING;
 //import java.util.TimSort;
 //import java.util.Arrays.LegacyMergeSort;
 
@@ -41,6 +46,65 @@ public class Generics_xyc {
 		
         A a = new A();
         Integer i = a.test();
+        
+        List<String> list2 = new ArrayList<String>();
+        list2.add("abc");
+        list2.add("piter");
+        list2.add("orange");
+        
+        for(String p: list2) {
+        	System.out.println(p);
+        }
+        System.out.println(list2.get(0));
+        
+		List<Person> list03 = new ArrayList<>();
+		list03.add(new Person("Ming", 12));
+		list03.add(new Person("Hong", 15));
+		list03.add(new Person("Jun", 18));
+		System.out.println(list03);
+		//contains 用来判断：List 里有没有“某个元素”
+		//返回true 或者 false
+		System.out.println(list03.contains(new Person("Jun", 18)));
+		System.out.println(list03.indexOf(new Person("Jun", 18)));
+		
+		//asList方法
+		//把数组“包装成”一个 List 视图
+		//不改变长度
+		//只是改数组对应位置的值
+		
+		
+		List<Person> list04 = Arrays.asList(new Person("Ming", 12), new Person("Hong", 15), new Person("Jun", 18));
+		Map<String, Person> map = new HashMap<>();
+		for (Person p : list04) {
+			//key是 person的name value存放person本身
+			map.put(p.getName(), p);
+		}
+		System.out.println(map.get("Jun"));
+		System.out.println(map.get("Mark"));
+
+		
+		
+		//keySet() 返回的是 Map 中所有 key 组成的 Set，而且这个 Set 和 Map 是“联动”的
+		for(String p:map.keySet()) {
+			System.out.println(p + "->" + map.get(p));
+		}
+		//等价于
+		//entrySet() 把 Map 里的每一组 key-value 封装成一个 Entry 对象的集合
+		//通过entry对象 可以同时拿到 key  和 value
+		for(Map.Entry<String, Person> entry:map.entrySet()) {
+			System.out.println(entry.getKey() + entry.getValue());
+		}
+		
+		
+		Map<String, Integer> map02 = new HashMap<>();
+		map02.put("Tom", 18);
+		map02.put("Jerry", 20);
+
+		Set<String> keys01 = map02.keySet();
+		System.out.println(keys01); // [Tom, Jerry]
+
+        
+        
 	}
 	
 	abstract class Test<T>{
@@ -90,22 +154,29 @@ public class Generics_xyc {
 //                TimSort.sort(a, 0, a.length, c, null, 0, 0);
 //        }
 //    }
-
     
+    /**
+     * 现在有一个新的需求，现在没有String类型的成绩了，但是成绩依然可能是整数，
+	也可能是小数，这时我们不希望用户将泛型指定为除数字类型外的其他类型，
+	我们就需要使用到泛型的上界定义：
+     * */
+    //这里T这个参数只能是 数据相关的了
+	public class Score02<T extends Number>{
+	    private final String name;
+	    private final String id;
+	    private final T value;
+	
+	    public Score02(String name, String id, T value) {
+	        this.name = name;
+	        this.id = id;
+	        this.value = value;
+	    }
+	
+	    public T getValue() {
+	        return value;
+	    }
+	}
 
-public class Score02<T extends Number>{
-    private final String name;
-    private final String id;
-    private final T value;
 
-    public Score02(String name, String id, T value) {
-        this.name = name;
-        this.id = id;
-        this.value = value;
-    }
 
-    public T getValue() {
-        return value;
-    }
-}
 }
