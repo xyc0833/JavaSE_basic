@@ -3,7 +3,7 @@ package com.xyc;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public class Person {
+public class Person  implements Comparable<Person>{
 
 	
 	private static int number;
@@ -77,6 +77,11 @@ public class Person {
 			return false;
 		Person other = (Person) obj;
 		return Objects.equals(address, other.address) && age == other.age && Objects.equals(name, other.name);
+	}
+	@Override
+	public int compareTo(Person o) {
+		//按照name字段排序
+		return this.name.compareTo(o.name);
 	}
 	
 	
