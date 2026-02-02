@@ -1,11 +1,14 @@
 package com.xyc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.print.DocFlavor.STRING;
@@ -102,9 +105,32 @@ public class Generics_xyc {
 
 		Set<String> keys01 = map02.keySet();
 		System.out.println(keys01); // [Tom, Jerry]
+		
+		Properties props = new Properties();
+		try {
+			props.load(Generics_xyc.class.getResourceAsStream("/com/xyc/setting.properties"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String url = props.getProperty("url");
+		String lang = props.getProperty("language");
+		String title = props.getProperty("course.title");
+		String description = props.getProperty("course.description");
+		System.out.println(url);
+		System.out.println(lang);
+		System.out.println(title);
+		System.out.println(description);
+		
+		
 
         
         
+	}
+	
+	static List<String> removeDuplicate(List<String> list) {
+		Set<String> set = new HashSet<>(list);
+		return new ArrayList<String>(set);
 	}
 	
 	abstract class Test<T>{
