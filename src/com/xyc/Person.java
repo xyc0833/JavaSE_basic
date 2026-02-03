@@ -1,11 +1,14 @@
 package com.xyc;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public class Person  implements Comparable<Person>{
+//接口可以多继承
+public class Person  implements Comparable<Person>,Serializable {
 
 	
+	private static final long serialVersionUID = 1116446341023698118L;
 	private static int number;
 	private String address = "beijing";
 	@Override
