@@ -1,4 +1,4 @@
-package com.xyc;
+package com.xyc01;
 
 public class Student implements Comparable<Student>{
 	private String name;

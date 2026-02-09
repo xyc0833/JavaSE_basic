@@ -1,4 +1,4 @@
-package com.xyc;
+package com.xyc01;
 
 public class Rect extends Shape{
 	private final double width;

@@ -1,4 +1,4 @@
-package com.xyc;
+package com.xyc01;
 
 public class Score<E,S,T> { //T相当于 待定的类型参数
     E name;
