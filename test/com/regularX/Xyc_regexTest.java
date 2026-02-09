@@ -32,4 +32,15 @@ public class Xyc_regexTest {
 		assertFalse(Xyc_regex.isValidQQ("00001"));
 		assertFalse(Xyc_regex.isValidQQ("099999"));
 	}
+	
+	
+	@Test
+	public void testZeros() {
+		assertEquals(0, Xyc_regex.zeros("123456"));
+		assertEquals(1, Xyc_regex.zeros("123450"));
+		assertEquals(2, Xyc_regex.zeros("123400"));
+		assertEquals(3, Xyc_regex.zeros("123000"));
+		assertEquals(4, Xyc_regex.zeros("120000"));
+		assertEquals(2, Xyc_regex.zeros("100100"));
+	}
 }

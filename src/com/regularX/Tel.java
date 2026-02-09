@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class Tel {
 	
 	public static Tel parse(String s) {
-		Pattern p = Pattern.compile("^(0\\d{2,3}\\-([1-9]\\d{5,7})$");
+		Pattern p = Pattern.compile("^0\\d{2,3}\\-([1-9]\\d{5,7})$");
 		Matcher m = p.matcher(s);
 		if (m.matches() == true) {
 			String s1 = m.group(1);
@@ -16,6 +16,8 @@ public class Tel {
 		}
 		return null;
 	}
+	
+	
 	private final String areaCode;
 	private final String phone;
 
