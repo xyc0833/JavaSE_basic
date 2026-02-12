@@ -1054,12 +1054,694 @@ new Thread(Producter_and_Consumer::add).start();
 
 > “创建一个线程，让它去执行 add() 方法”
 
+
+
+# 🧩 `DecimalFormat` 是干嘛的？
+
+这个是 Java 里**做数字格式化的王牌类**，比 `String.format` 更专业 👇
+
+
+一句话：
+
+> **把数字按指定“格式模板”变成字符串**
+
+包：
+
+```java
+java.text.DecimalFormat
+```
+
 ---
 
-如果你愿意，我可以给你画一张
-**Lambda → 方法引用 → 函数式接口 三者关系图**
-这块一旦通了，Java 并发 + Stream API 直接打通任督二脉 🚀
+# 🧠 基本用法
 
+```java
+double num = 12345.6789;
+
+DecimalFormat df = new DecimalFormat("格式规则");
+String result = df.format(num);
+```
+
+---
+
+# 🎯 最核心：格式符号
+
+| 符号  | 作用         |
+| --- | ---------- |
+| `0` | 必须有数字，不够补0 |
+| `#` | 可有可无       |
+| `.` | 小数点        |
+| `,` | 千位分隔符      |
+| `%` | 乘100并加%    |
+| `¤` | 货币符号       |
+| `E` | 科学计数法      |
+
+---
+
+# 🌰 常见场景
+
+## ① 保留小数位
+
+```java
+DecimalFormat df = new DecimalFormat("0.00");
+System.out.println(df.format(3.1));     // 3.10
+System.out.println(df.format(3));       // 3.00
+```
+
+`0` 表示必须有。
+
+---
+
+## ② 可选小数位
+
+```java
+DecimalFormat df = new DecimalFormat("0.##");
+System.out.println(df.format(3.1));     // 3.1
+System.out.println(df.format(3));       // 3
+```
+
+`#` 表示没有就不显示。
+
+---
+
+## ③ 千位分隔
+
+```java
+DecimalFormat df = new DecimalFormat("#,###");
+System.out.println(df.format(1234567)); // 1,234,567
+```
+
+---
+
+## ④ 百分比
+
+```java
+DecimalFormat df = new DecimalFormat("0.00%");
+System.out.println(df.format(0.256));   // 25.60%
+```
+
+自动 ×100。
+
+---
+
+## ⑤ 金额
+
+```java
+DecimalFormat df = new DecimalFormat("¤#,##0.00");
+System.out.println(df.format(1234.5));  // ￥1,234.50 （取决于地区）
+```
+
+---
+
+## ⑥ 科学计数法
+
+```java
+DecimalFormat df = new DecimalFormat("0.###E0");
+System.out.println(df.format(12345));   // 1.235E4
+```
+
+---
+
+# ⚙️ 进阶控制
+
+```java
+df.setRoundingMode(RoundingMode.HALF_UP); // 四舍五入
+df.setMaximumFractionDigits(2);
+df.setMinimumIntegerDigits(3);
+```
+
+---
+
+# 🔍 和 String.format 区别
+
+| 对比     | DecimalFormat | String.format |
+| ------ | ------------- | ------------- |
+| 控制精度   | 更灵活           | 一般            |
+| 本地化    | 强             | 一般            |
+| 金额/百分比 | 很方便           | 麻烦            |
+| 性能     | 高             | 稍慢            |
+
+---
+
+# 🚨 注意
+
+### 1️⃣ 线程不安全
+
+多线程要各自 new 或加锁。
+
+### 2️⃣ 只负责“显示”，不改变原数值
+
+---
+
+# 🧠 一句话总结
+
+> `DecimalFormat` = **给数字套模板，想怎么长就怎么长**
+
+
+## 数字类 math
+**Java `Math` 类的常用数学方法**，这个类基本是“计算工具箱” 📦
+
+包：
+
+```java
+java.lang.Math   // 不用导包，默认可用
+```
+
+---
+
+# 🧩 一、数学常量
+
+```java
+System.out.println(Math.PI);  // π = 3.141592653589793
+System.out.println(Math.E);   // e = 2.718281828459045
+```
+
+---
+
+# 🧩 二、绝对值
+
+```java
+double a = -123456.36695;
+System.out.printf("%.2f%n", Math.abs(a));
+```
+
+👉 `abs()` = 取绝对值
+结果：`123456.37`
+
+---
+
+# 🧩 三、取整相关（重点！）
+
+你图里这三兄弟是面试常客 👇
+
+```java
+double b = 43.4;
+
+System.out.printf("The ceiling of %.2f is %.2f%n", b, Math.ceil(b));
+System.out.printf("The floor of %.2f is %.2f%n", b, Math.floor(b));
+System.out.printf("The rint of %.2f is %.2f%n", b, Math.rint(b));
+```
+
+### 区别：
+
+| 方法        | 作用      | 例子(43.4) |
+| --------- | ------- | -------- |
+| `ceil()`  | 向上取整    | 44.0     |
+| `floor()` | 向下取整    | 43.0     |
+| `rint()`  | 四舍六入五成双 | 43.0     |
+
+---
+
+## ❗ rint 特殊规则（银行家舍入）
+
+```java
+Math.rint(3.5) → 4.0
+Math.rint(2.5) → 2.0
+```
+
+靠近偶数。
+
+---
+
+# 🧩 四、四舍五入
+
+```java
+Math.round(3.6);   // 4
+Math.round(3.4);   // 3
+```
+
+⚠ 返回 `long` 或 `int`
+
+---
+
+# 🧩 五、最大最小
+
+```java
+Math.max(10, 20);  // 20
+Math.min(10, 20);  // 10
+```
+
+---
+
+# 🧩 六、幂 & 开方
+
+```java
+Math.pow(2, 3);  // 8.0
+Math.sqrt(16);   // 4.0
+Math.cbrt(27);   // 3.0
+```
+
+---
+
+# 🧩 七、随机数
+
+```java
+Math.random();  // [0.0, 1.0)
+```
+
+生成 1~10：
+
+```java
+int n = (int)(Math.random() * 10) + 1;
+```
+
+---
+
+# 🧩 八、三角函数
+
+```java
+Math.sin(Math.PI / 2); // 1
+Math.cos(0);           // 1
+Math.tan(Math.PI / 4); // 1
+```
+
+角度转弧度：
+
+```java
+Math.toRadians(90);
+```
+
+---
+
+# 🧩 九、完整示例代码（带注释）
+
+```java
+public class MathDemo {
+    public static void main(String[] args) {
+
+        // 常量
+        System.out.println(Math.PI);
+        System.out.println(Math.E);
+
+        // 绝对值
+        double a = -123456.36695;
+        System.out.printf("abs: %.2f%n", Math.abs(a));
+
+        // 取整
+        double b = 43.4;
+        System.out.printf("ceil: %.2f%n", Math.ceil(b));
+        System.out.printf("floor: %.2f%n", Math.floor(b));
+        System.out.printf("rint: %.2f%n", Math.rint(b));
+
+        // 四舍五入
+        System.out.println("round: " + Math.round(3.6));
+
+        // 幂运算
+        System.out.println("pow: " + Math.pow(2, 3));
+
+        // 开方
+        System.out.println("sqrt: " + Math.sqrt(16));
+
+        // 最大最小
+        System.out.println("max: " + Math.max(5, 8));
+
+        // 随机数
+        System.out.println("random: " + Math.random());
+    }
+}
+```
+
+---
+
+# 🎯 一句话总结
+
+`Math` 类就是：
+
+> **“不用 new 的数学工具箱”**
+
+
+## this关键字
+
+在Java中，`this`关键字是一个非常重要的引用，它指向**当前对象**本身。让我详细介绍它的主要用法：
+
+## 1. 引用当前类的实例变量
+
+当局部变量（方法参数）与实例变量重名时，用`this`来区分：
+
+```java
+public class Person {
+    private String name;
+    private int age;
+    
+    public Person(String name, int age) {
+        this.name = name;  // this.name指向实例变量，name指向方法参数
+        this.age = age;    // 如果不加this，就是参数自己赋值给自己
+    }
+}
+```
+
+## 2. 调用当前类的其他构造方法
+
+在一个构造方法中调用另一个构造方法，**必须写在第一行**：
+
+```java
+public class Student {
+    private String name;
+    private int age;
+    private String school;
+    
+    // 完整构造方法
+    public Student(String name, int age, String school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+    
+    // 无学校信息的构造方法，调用上面的构造方法
+    public Student(String name, int age) {
+        this(name, age, "未入学");  // 调用三个参数的构造方法
+    }
+    
+    // 无参构造方法，调用两个参数的构造方法
+    public Student() {
+        this("未知", 0);  // 调用两个参数的构造方法
+    }
+}
+```
+
+## 3. 返回当前对象实例
+
+实现链式调用（方法返回对象本身）：
+
+```java
+public class StringBuilder {
+    private String value = "";
+    
+    public StringBuilder append(String str) {
+        value += str;
+        return this;  // 返回当前对象，支持链式调用
+    }
+    
+    public StringBuilder append(int num) {
+        value += num;
+        return this;  // 返回当前对象
+    }
+}
+
+// 使用示例
+StringBuilder sb = new StringBuilder();
+sb.append("Hello").append(" ").append("World");
+```
+
+## 4. 作为方法参数传递
+
+将当前对象作为参数传递给其他方法：
+
+```java
+public class EventHandler {
+    public void registerListener() {
+        // 将当前对象注册为监听器
+        EventManager.addListener(this);
+    }
+}
+
+public class TreeNode {
+    private TreeNode parent;
+    
+    public void setParent(TreeNode node) {
+        this.parent = node;
+        node.addChild(this);  // 将当前节点添加为子节点
+    }
+}
+```
+
+## 5. 区分内部类和外部类的this
+
+在内部类中访问外部类的实例：
+
+```java
+public class OuterClass {
+    private String name = "Outer";
+    
+    class InnerClass {
+        private String name = "Inner";
+        
+        public void printNames() {
+            // 访问内部类的成员
+            System.out.println(this.name);           // 输出: Inner
+            
+            // 访问外部类的成员
+            System.out.println(OuterClass.this.name); // 输出: Outer
+        }
+    }
+}
+```
+
+## 6. 调用当前类的实例方法
+
+虽然通常可以省略，但有时为了代码清晰可以加上：
+
+```java
+public class Calculator {
+    private int result = 0;
+    
+    public void add(int value) {
+        // 可以省略this，编译器会自动添加
+        this.result += value;
+    }
+    
+    public void display() {
+        // 显式使用this调用方法
+        this.printResult();  // 等同于 printResult();
+    }
+    
+    private void printResult() {
+        System.out.println("结果: " + this.result);
+    }
+}
+```
+
+## 注意事项
+
+1. **不能在静态上下文中使用this**：静态方法属于类而非对象
+   ```java
+   public class Test {
+       private int value;
+       
+       public static void staticMethod() {
+           // this.value = 10;  // 编译错误！静态方法不能使用this
+       }
+   }
+   ```
+
+2. **构造方法调用必须是第一个语句**
+   ```java
+   public class Example {
+       public Example() {
+           // this("test");  // 正确
+           // System.out.println("test");  // 如果这行在前面，编译错误
+           // this("test");  // 不能放在这里，必须在第一行
+       }
+       
+       public Example(String s) { }
+   }
+   ```
+
+`this`关键字的核心作用是消除歧义和实现对象自身的引用，掌握这些用法能帮助你写出更清晰、更灵活的Java代码。
+
+## 传值 传址
+
+在Java中，**只有传值（值传递）**，没有传地址（引用传递）。这是一个非常重要的概念，很多初学者容易误解。让我详细解释：
+
+## 基本概念
+
+**Java总是传值**，但传递的内容取决于参数类型：
+- **基本类型**：传递的是值的副本
+- **引用类型**：传递的是引用的副本（对象的地址值）
+
+## 1. 基本类型的传值
+
+传递的是实际值的副本，方法内的修改不影响原变量：
+
+```java
+public class ValuePassing {
+    public static void main(String[] args) {
+        int num = 10;
+        System.out.println("调用前: " + num);  // 10
+        
+        changeValue(num);
+        System.out.println("调用后: " + num);  // 10（值不变）
+    }
+    
+    public static void changeValue(int x) {
+        x = 20;  // 修改的是副本，不影响原变量
+        System.out.println("方法内: " + x);   // 20
+    }
+}
+```
+
+## 2. 引用类型的传值
+
+传递的是引用的副本（对象地址），两个引用指向同一个对象：
+
+```java
+public class ReferencePassing {
+    public static void main(String[] args) {
+        Person person = new Person("张三", 20);
+        System.out.println("调用前: " + person.getName());  // 张三
+        
+        changeName(person);
+        System.out.println("调用后: " + person.getName());  // 李四（对象内容改变了）
+        
+        System.out.println("调用前引用: " + person);  // Person@15db9742
+        
+        changeReference(person);
+        System.out.println("调用后引用: " + person);  // Person@15db9742（引用本身没变）
+    }
+    
+    // 修改对象内容 - 会影响原对象
+    public static void changeName(Person p) {
+        p.setName("李四");  // 通过引用副本修改同一个对象
+    }
+    
+    // 尝试修改引用本身 - 不会影响原引用
+    public static void changeReference(Person p) {
+        p = new Person("王五", 30);  // 只修改了引用的副本
+        System.out.println("方法内新引用: " + p);  // Person@6d06d69c
+    }
+}
+
+class Person {
+    private String name;
+    private int age;
+    
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+```
+
+## 3. 常见误解示例
+
+### 误解1：认为可以修改引用本身
+```java
+public class Misunderstanding1 {
+    public static void main(String[] args) {
+        String str = "Hello";
+        changeString(str);
+        System.out.println(str);  // 仍然是 "Hello"，不是 "World"
+    }
+    
+    public static void changeString(String s) {
+        s = "World";  // 只修改了引用的副本
+    }
+}
+```
+
+### 误解2：包装类的特殊情况
+```java
+public class WrapperExample {
+    public static void main(String[] args) {
+        Integer num = 100;
+        changeInteger(num);
+        System.out.println(num);  // 100，不是 200
+    }
+    
+    public static void changeInteger(Integer i) {
+        i = 200;  // 实际上是 i = Integer.valueOf(200)，修改了引用指向
+    }
+}
+```
+
+## 4. 数组也是引用类型
+
+```java
+public class ArrayExample {
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 3};
+        
+        modifyArray(arr);
+        System.out.println(Arrays.toString(arr));  // [99, 2, 3]（内容改变）
+        
+        reassignArray(arr);
+        System.out.println(Arrays.toString(arr));  // [99, 2, 3]（引用未变）
+    }
+    
+    // 修改数组内容 - 会生效
+    public static void modifyArray(int[] array) {
+        array[0] = 99;
+    }
+    
+    // 重新分配数组 - 不会生效
+    public static void reassignArray(int[] array) {
+        array = new int[]{4, 5, 6};  // 只修改了引用的副本
+    }
+}
+```
+
+## 5. 实际应用中的理解
+
+### 5.1 交换两个对象 - 错误示范
+```java
+public class SwapExample {
+    public static void main(String[] args) {
+        Person p1 = new Person("张三", 20);
+        Person p2 = new Person("李四", 25);
+        
+        swap(p1, p2);
+        System.out.println(p1.getName());  // 张三（没交换成功）
+        System.out.println(p2.getName());  // 李四（没交换成功）
+    }
+    
+    // 无法交换两个引用本身
+    public static void swap(Person a, Person b) {
+        Person temp = a;
+        a = b;
+        b = temp;  // 只交换了引用的副本
+    }
+}
+```
+
+### 5.2 正确做法：交换对象属性
+```java
+public class CorrectSwap {
+    public static void main(String[] args) {
+        Person p1 = new Person("张三", 20);
+        Person p2 = new Person("李四", 25);
+        
+        swapNames(p1, p2);
+        System.out.println(p1.getName());  // 李四
+        System.out.println(p2.getName());  // 张三
+    }
+    
+    // 交换属性值，而不是引用
+    public static void swapNames(Person a, Person b) {
+        String tempName = a.getName();
+        a.setName(b.getName());
+        b.setName(tempName);
+    }
+}
+```
+
+## 6. 图解理解
+
+```
+基本类型传值：
+main: num = 10  ──副本──→ changeValue: x = 10
+                           x = 20
+main: num 仍然是 10
+
+引用类型传值：
+main: person ──副本──→ changeName: p
+      │                    │
+      ↓                    ↓
+    Person对象         指向同一个对象
+    name="张三" ←────────修改 name="李四"
+```
+
+## 总结
+
+1. **Java只有传值，没有传地址**
+2. **基本类型**：传递值的副本，方法内修改不影响原变量
+3. **引用类型**：传递引用的副本，通过这个副本可以修改对象内容，但不能修改原引用本身
+4. **String、包装类等不可变类**：看起来像基本类型，其实是引用传递，但内容不可修改
+5. **数组**：也是引用类型，遵循同样的规则
+
+理解这一点对避免bug非常重要，特别是在方法调用和参数传递时。
 
 
 
