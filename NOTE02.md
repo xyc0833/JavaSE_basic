@@ -682,6 +682,24 @@ ThreadLocal的使用
 
 我们可以使用ThreadLocal类，来创建工作内存中的变量，它将我们的变量值存储在内部（只能存储一个变量），不同的线程访问到ThreadLocal对象时，都只能获取到当前线程所属的变量。
 
+我们发现在线程中创建的子线程，无法获得父线程工作内存中的变量：
+我们可以使用InheritableThreadLocal来解决
+```java
+public static void main(String[] args) {
+    ThreadLocal<String> local = new InheritableThreadLocal<>();
+    Thread t = new Thread(() -> {
+       local.set("lbwnb");
+        new Thread(() -> {
+            System.out.println(local.get());
+        }).start();
+    });
+    t.start();
+}
+```
+在InheritableThreadLocal存放的内容，会自动向子线程传递。
+
+## 处理线程的定时任务
+
 
 
 
