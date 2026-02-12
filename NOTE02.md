@@ -665,6 +665,23 @@ wait / notify用于多线程协调运行：
  
 必须在已获得的锁对象上调用notify / notifyAll()方法
 
+### threadlocal
+
+调用Thread.currentThread()获取当前线程。
+ 
+JDK提供了ThreadLocal，在一个线程中传递同一个对象。
+ 
+ThreadLocal表示线程的“局部变量”，它确保每个线程的ThreadLocal变量都是各自独立的。
+ 
+ThreadLocal适合在一个线程的处理流程中保持上下文（避免了同一参数在所有方法中传递）
+ 
+使用ThreadLocal要用try … finally结构。
+
+ThreadLocal的使用
+既然每个线程都有一个自己的工作内存，那么能否只在自己的工作内存中创建变量仅供线程自己使用呢？
+
+我们可以使用ThreadLocal类，来创建工作内存中的变量，它将我们的变量值存储在内部（只能存储一个变量），不同的线程访问到ThreadLocal对象时，都只能获取到当前线程所属的变量。
+
 
 
 
