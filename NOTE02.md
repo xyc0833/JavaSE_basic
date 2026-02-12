@@ -699,6 +699,366 @@ public static void main(String[] args) {
 在InheritableThreadLocal存放的内容，会自动向子线程传递。
 
 ## 处理线程的定时任务
+```java
+Timer timer = new Timer();//创建一个定时器对象
+//注意这个是一个抽象类，不是接口，无法使用lambda表达式简化，只能使用匿名内部类
+timer.schedule(new TimerTask() {
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getName());    //打印当前线程名称
+        System.out.println("123123");
+        timer.cancel();//一定要在这里 cancel
+    }//执行一个延时任务
+}, 1000,10);//延迟一秒
+```
+
+## 守护线程
+
+注意： 不要把操作系统中的守护进程和守护线程相提并论。
+
+操作系统中的守护进程在后台运行，不需要和用户交互，本质和普通进程类似。
+而守护线程就不一样了，当其他所有的非守护线程结束之后，守护线程自动结束，
+也就是说，Java中所有的线程都执行完毕后，守护线程自动停止，
+因此守护线程不适合进行IO操作，只适合打打杂
+
+## (Java 8) 并行流
+
+集合类中有一个东西是Java8新增的Spliterator接口，翻译过来就是：可拆分迭代器（Splitable Iterator）和Iterator一样，Spliterator也用于遍历数据源中的元素，但它是为了并行执行而设计的。Java 8已经为集合框架中包含的所有数据结构提供了一个默认的Spliterator实现。在集合跟接口Collection中提供了一个spliterator()方法用于获取可拆分迭代器。
+
+
+并行流，其实就是一个多线程执行的流，它通过默认的ForkJoinPool实现（这里不讲解原理），它可以提高你的多线程任务的速度。
+
+ 这个方法挺有意思，算是 **函数式 + 并行计算** 的结合 👇
+
+## 🧩 `Arrays.parallelSetAll` 是干嘛的？
+
+一句话：
+**用你提供的“生成规则”，并行地给数组每个位置赋值。**
+
+它在 `java.util.Arrays` 里，从 **Java 8** 开始有。
+
+---
+
+## 📌 方法长这样
+
+以 `int[]` 为例：
+
+```java
+static void parallelSetAll(int[] array, IntUnaryOperator generator)
+```
+
+其他类型也有（long、double、泛型 T[]）。
+
+---
+
+## 🔧 参数啥意思？
+
+| 参数          | 说明                           |
+| ----------- | ---------------------------- |
+| `array`     | 你要填充的数组                      |
+| `generator` | 一个函数：**输入是索引 i，返回这个位置该放什么值** |
+
+也就是：
+
+> **数组[i] = generator.applyAsInt(i)**
+> 只不过是 **多线程并行执行的**
+
+---
+
+## 🧠 它和 `setAll` 区别？
+
+| 方法                        | 是否并行                  |
+| ------------------------- | --------------------- |
+| `Arrays.setAll()`         | ❌ 单线程                 |
+| `Arrays.parallelSetAll()` | ✅ 多线程并行（ForkJoinPool） |
+
+数组大、计算复杂时，并行版本更快。
+
+---
+
+## ✨ 基础例子
+
+### 例1：把数组填成下标的平方
+
+```java
+int[] arr = new int[10];
+
+Arrays.parallelSetAll(arr, i -> i * i);
+
+System.out.println(Arrays.toString(arr));
+```
+
+结果：
+
+```
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+```
+
+执行逻辑是：
+
+```
+arr[0] = 0*0
+arr[1] = 1*1
+arr[2] = 2*2
+...
+```
+
+---
+
+### 例2：初始化对象数组
+
+```java
+String[] arr = new String[5];
+
+Arrays.parallelSetAll(arr, i -> "index=" + i);
+```
+
+---
+
+## ⚙️ 底层怎么并行？
+
+它用的是：
+
+> **ForkJoinPool.commonPool()**
+
+自动把数组拆块，多线程算。
+
+你不用管线程。
+
+---
+
+## 🚨 注意点（很重要）
+
+### ❗ 1. generator 里别写有副作用的代码
+
+这是错的示范：
+
+```java
+int sum = 0;
+Arrays.parallelSetAll(arr, i -> sum += i); // ❌ 线程不安全
+```
+
+因为多个线程会同时改 `sum`，结果乱。
+
+---
+
+### ❗ 2. 小数组别用
+
+并行是有开销的，小数组反而更慢。
+
+---
+
+### ❗ 3. 适合这种场景
+
+✔ 大数组
+✔ 每个元素计算互不影响
+✔ 计算逻辑较重
+
+比如：图像处理、数值计算、矩阵运算。
+
+---
+
+## 🧠 总结一句人话
+
+`parallelSetAll` 就是：
+
+> “**你告诉我规则，我帮你并行把整个数组造出来**”
+
+等价于：
+
+```java
+for (int i = 0; i < arr.length; i++) {
+    arr[i] = f(i);
+}
+```
+
+只不过它是 **多线程版本** 🚀
+
+---
+
+要不要我再画个「线程分块执行示意图」帮你彻底理解它怎么拆任务？
+
+
+
+你这个问题问得特别好，这正是 **Java 8 之后代码风格突变的核心点** 😄
+
+你这句：
+
+```java
+new Thread(Producter_and_Consumer::add);
+```
+
+里面的 `::` 叫：
+
+> 🎯 **方法引用（Method Reference）**
+
+---
+
+## 🌰 先说人话
+
+这句代码 **等价于**：
+
+```java
+new Thread(() -> Producter_and_Consumer.add());
+```
+
+也等价于更早的写法：
+
+```java
+new Thread(new Runnable() {
+    @Override
+    public void run() {
+        Producter_and_Consumer.add();
+    }
+});
+```
+
+👉 也就是说：
+
+**`::` 是 Lambda 的“极简写法”**
+
+---
+
+## 🧠 背后的原理
+
+`Thread` 构造器需要的是：
+
+```java
+public Thread(Runnable target)
+```
+
+而 `Runnable` 是个函数式接口：
+
+```java
+@FunctionalInterface
+public interface Runnable {
+    void run();
+}
+```
+
+它只需要一个：
+
+```
+无参 → 无返回值 的方法
+```
+
+而你这个：
+
+```java
+private static void add()
+```
+
+刚好签名匹配：
+
+```
+() -> void
+```
+
+所以 Java 看到：
+
+```java
+Producter_and_Consumer::add
+```
+
+就理解为：
+
+> “把这个方法当成 Runnable.run() 来用”
+
+---
+
+## 📌 方法引用本质
+
+方法引用就是：
+
+> **把“已经存在的方法”当成函数传进去**
+
+语法：
+
+```
+类名::方法名
+对象::方法名
+类名::new   （构造器引用）
+```
+
+---
+
+## 🔍 你这个属于哪种？
+
+```java
+Producter_and_Consumer::add
+```
+
+属于：
+
+> **类名::静态方法**
+
+因为 `add()` 是 `static`
+
+---
+
+## ✨ 再举几个对比（秒懂）
+
+### ① 普通 lambda
+
+```java
+i -> i * 2
+```
+
+### 方法引用版
+
+```java
+Integer::valueOf
+```
+
+---
+
+### ② 线程例子
+
+```java
+new Thread(() -> System.out.println("hello")).start();
+```
+
+方法引用版：
+
+```java
+new Thread(System.out::println).start();
+```
+
+---
+
+## 🚨 你代码里有个隐藏 bug
+
+你写了：
+
+```java
+new Thread(Producter_and_Consumer::add);
+```
+
+⚠️ **线程根本没启动！！**
+
+应该是：
+
+```java
+new Thread(Producter_and_Consumer::add).start();
+```
+
+否则只是创建线程对象，没有运行。
+
+---
+
+## 🧠 总结一句
+
+`::` 方法引用 = **把一个现成的方法，当成 Lambda 传给函数式接口**
+
+你这句的意思就是：
+
+> “创建一个线程，让它去执行 add() 方法”
+
+---
+
+如果你愿意，我可以给你画一张
+**Lambda → 方法引用 → 函数式接口 三者关系图**
+这块一旦通了，Java 并发 + Stream API 直接打通任督二脉 🚀
 
 
 
