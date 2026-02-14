@@ -1705,10 +1705,10 @@ java中表示注解
 
 泛型（Generic）就是定义一种模板，例如ArrayList&lt;T&gt;。
 
-在代码中为用到的类创建对应的ArrayList&lt;类型&gt;： 
+在代码中为用到的类创建对应的ArrayList&lt;类型&gt;：
 * ArrayList&lt;String&gt; strList = new ArrayList&lt;String&gt;();
 
-编译器会针对泛型类型作检查。 
+编译器会针对泛型类型作检查。
 要注意泛型的继承关系。
 
 
@@ -1869,7 +1869,7 @@ void someMethod(List<? super Integer> list) {
 可以用<T>消除<?>
 
 部分反射API是泛型：
- * Class<T> * Constructor<T>
+* Class<T>* Constructor<T>
  
 可以声明带泛型的数组，但不能直接创建带泛型的数组，必须强制转型
  
@@ -1966,10 +1966,10 @@ https://www.itbaima.cn/zh-CN/document/k6fmxd6qabgkwm9i?segment=1#%E8%BF%AD%E4%BB
  
 正确使用Map必须保证：
  
-* 作为Key的对象必须正确覆写equals()方法 * 作为Key的对象必须正确覆写hashCode()方法
+* 作为Key的对象必须正确覆写equals()方法* 作为Key的对象必须正确覆写hashCode()方法
  
 覆写hashCode：
- * 如果两个对象相等，则两个对象的hashCode()必须相等
+* 如果两个对象相等，则两个对象的hashCode()必须相等
 * 如果两个对象不相等，则两个对象的hashCode()尽量不相等（可以相等，会造成效率下降）
  
 hashCode可以通过Objects.hashCode()辅助方法实现
